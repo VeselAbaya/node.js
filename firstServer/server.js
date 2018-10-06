@@ -32,7 +32,7 @@ app.get('/', (req, res) => {
     res.redirect(`/status/${id}`);
 });
 
-app.get('/seregaSosjot', (req, res) => {
+app.get('/seregaSos', (req, res) => {
   res.render('seregaSosjot.hbs', {
     paragraphContent: 'Serega Sosjot',
   });
