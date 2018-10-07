@@ -22,14 +22,9 @@ hbs.registerHelper('toUpperCase', (text) => text.toUpperCase());
 app.set('view engine', 'hbs');
 
 app.get('/', (req, res) => {
-  const id = req.query.id;
-
-  if (!id) {
-    res.render('home.hbs', {
-      paragraphContent: 'Nikto ne sosjot',
-    });
-  } else
-    res.redirect(`/status/${id}`);
+  res.render('home.hbs', {
+    paragraphContent: 'Nikto ne sosjot',
+  });
 });
 
 app.get('/seregaSos', (req, res) => {
@@ -38,8 +33,11 @@ app.get('/seregaSos', (req, res) => {
   });
 });
 
+app.get('/status', (req, res) => {
+  res.send(statuses);
+});
+
 app.get('/status/:id', (req, res) => {
-  console.log(statuses.find(obj => obj.id === req.params.id));
   res.send(statuses.find(obj => obj.id === req.params.id));
 });
 
@@ -64,6 +62,11 @@ app.put('/status/:id', (req, res) => {
 
   fs.writeFile('statuses.json', JSON.stringify(statuses));
   res.send(statuses[i]);
+});
+
+app.delete('status/:id', (req, res) => {
+  statuses.splice(statuses.findIndex(obj => obj.id === req.params.id), 1);
+  fs.writeFile('statuses.json', JSON.stringify(statuses));
 });
 
 app.listen(port, () => {
