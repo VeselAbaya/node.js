@@ -4,6 +4,7 @@ const app = require('./server').app
 const fs = require('fs')
 
 const statuses = JSON.parse(fs.readFileSync('statuses.json'));
+let id;
 
 describe('Server tests', () => {
   it('Should get all statuses from server (GET /status)', done => {
@@ -16,29 +17,42 @@ describe('Server tests', () => {
       .end(done)
   })
 
-  it('Should add new status (POST /status)', done => {
-    const newObj = {name: 'Antay', status: 'learn', object: 'testing'}
-    request(app)
-      .post('/status')
-      .send(newObj)
-      .expect(res =>{
-        statuses.push(newObj)
-        expect(res.body).to.have.keys('name', 'status', 'object')
-      })
-      .end(done)
-  })
-
-  it('Should update Antay\'s status', done => {
-    const newObj = {name: 'Antay', status: 'learn', object: 'testing'}
-    request(app)
-      .put('/status/yj7r05evjmzyccce')
-      .send(newObj)
-      .expect(res => {
-        expect(res.body).to.be.eql({
-          ...newObj,
-          id: 'yj7r05evjmzyccce'
+  describe('POST /status and PUT/status/:id testing', () => {
+    it('Should add new status (POST /status)', done => {
+      const newObj = {name: 'Antay', status: 'learn', object: 'testing'}
+      request(app)
+        .post('/status')
+        .send(newObj)
+        .expect(res =>{
+          expect(res.body).to.have.keys('name', 'status', 'object')
+          statuses.push(res.body)
+          id = res.body.id
         })
-      })
-      .end(done)
+        .end(done)
+    })
+
+    it('Checking that status has added', (done) => {
+      request(app)
+        .get('/status')
+        .expect(res => {
+          expect(res.body).to.be.eql(statuses)
+        })
+        .end(done)
+    })
+
+    it('Should update Antay\'s status', done => {
+      const newObj = {name: 'Antay', status: 'learn', object: 'testing'}
+
+      request(app)
+        .put(`/status/${id}`)
+        .send(newObj)
+        .expect(res => {
+          expect(res.body).to.be.eql({
+            ...newObj,
+            id
+          })
+        })
+        .end(done)
+    })
   })
 })
