@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "mocha **/*.test.js",
     "start": "node server.js"
   },
   "author": "Antay Juskovets",
@@ -14,5 +14,10 @@
     "express": "^4.16.3",
     "hbs": "^4.0.1",
     "uniqid": "^5.0.3"
+  },
+  "devDependencies": {
+    "expect.js": "^0.3.1",
+    "mocha": "^5.2.0",
+    "supertest": "^3.3.0"
   }
 }

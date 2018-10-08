@@ -15,6 +15,7 @@ fs.readFile('statuses.json', (err, data) => {
 app.use(express.static(__dirname + '/html'));
 app.use(express.static(__dirname + '/css'));
 app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.json())
 
 hbs.registerPartials(__dirname + '/views/partials');
 hbs.registerHelper('footerContent', () => `All the time in ${new Date().getFullYear()}`);
@@ -72,3 +73,5 @@ app.delete('status/:id', (req, res) => {
 app.listen(port, () => {
   console.log(`Server up on port: ${port}`)
 });
+
+module.exports.app = app;
