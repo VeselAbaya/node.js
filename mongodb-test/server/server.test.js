@@ -1,14 +1,17 @@
 const request = require('supertest')
 const expect = require('expect')
+const {ObjectId} = require('mongodb')
 
 const app = require('./server')
 const Todo = require('./db/models/todo')
 
 const todos = [
   {
+    _id: new ObjectId(),
     text: 'first test todo'
   },
   {
+    _id: new ObjectId(),
     text: 'second test todo'
   }
 ]
@@ -67,5 +70,31 @@ describe('POST /todos', () => {
           done()
         }).catch(err => done(err))
       })
+  })
+})
+
+describe('GET /todos/:id', () => {
+  it('should create a new todo', done => {
+    request(app)
+      .get(`/todos/${todos[0]._id.toHexString()}`)
+      .expect(200)
+      .expect(res => {
+        expect(res.body.todo.text).toBe('first test todo')
+      })
+      .end(done)
+  })
+
+  it('should return 404 if todo not found', done => {
+    request(app)
+      .get(`/todos/${new ObjectId().toHexString()}`)
+      .expect(404)
+      .end(done)
+  })
+
+  it('should return 400 if ID is invalid', done => {
+    request(app)
+      .get('/todos/dfeg245dfh4')
+      .expect(400)
+      .end(done)
   })
 })
