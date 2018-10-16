@@ -125,26 +125,69 @@ export const keyControl = () => {
   })
 }
 
-const restartController = () => {
-  for (let i = 0; i !== 1000; ++i) {
-    const e = Math.ceil((Math.random() * 100) % 4)
-    switch(e) {
-      case 0:
-        if (current_empty_pos % constants.grid_size !== 0)
-          document.querySelector(`[data-pos="${current_empty_pos+1}"]`).click()
-        break;
-      case 1:
-        if (current_empty_pos <= constants.grid_size * (constants.grid_size - 1))
-          document.querySelector(`[data-pos="${current_empty_pos+4}"]`).click()
-        break;
-      case 2:
-        if (current_empty_pos % constants.grid_size !== 1)
-          document.querySelector(`[data-pos="${current_empty_pos-1}"]`).click()
-        break;
-      case 3:
-        if (current_empty_pos > constants.grid_size)
-          document.querySelector(`[data-pos="${current_empty_pos-4}"]`).click()
-        break;
+const makeSolvable = (ids) => {
+  const idsArray = []
+  for (let id of ids)
+    idsArray.push(id)
+
+  const index16 = idsArray.findIndex(el => el === 16)
+  idsArray.splice(index16, 1)
+
+  let checkSum = 0
+  for (let i = 0; i !== constants.block_amount - 1; ++i) {
+    for (let j = i + 1; j !== constants.block_amount; ++j) {
+      if (idsArray[i] > idsArray[j])
+        checkSum += 1
+    }
+  }
+
+  checkSum += (index16 % constants.grid_size) + 1
+  if (checkSum % 2 !== 0)
+    idsArray[1] = [idsArray[0], idsArray[0] = idsArray[1]][0];
+
+  idsArray.splice(index16, 0, 16)
+  current_empty_pos = index16 + 1
+  return idsArray
+}
+
+export const restartController = () => {
+  const ids = new Set()
+  while (ids.size !== constants.block_amount)
+    ids.add(Math.floor((Math.random() * 16)) + 1)
+
+  const idsArray = makeSolvable(ids)
+
+  for (let i = 0; i !== constants.block_amount; ++i) {
+    const id = idsArray[i]
+    const block = document.querySelector(`[data-pos="${i+1}"]`)
+    block.id = id
+    block.innerHTML = `<span>${id !== 16 ? id : ''}</span>`
+  }
+}
+
+export const generateField = (block_order) => {
+  if (!block_order) {
+    for (let i = 1; i !== constants.block_amount + 1; ++i) {
+      const markup = `
+        <div class="view__block" id="${i}" data-pos="${i}">
+          <span>${i !== 16 ? i : ''}</span>
+        </div>
+      `
+
+      elements.view.insertAdjacentHTML('beforeend', markup)
+    }
+  } else {
+    for (let i = 1; i !== constants.block_amount + 1; ++i) {
+      const markup = `
+        <div class="view__block" id="${block_order[i-1]}" data-pos="${i}">
+          <span>${block_order[i-1] !== 16 ? block_order[i-1] : (() => { 
+            current_empty_pos = i
+            return ''
+          })()}</span>
+        </div>
+      `
+
+      elements.view.insertAdjacentHTML('beforeend', markup)
     }
   }
 }

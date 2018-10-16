@@ -1,26 +1,21 @@
 import elements from './base'
-import {clickControl, touchControl, keyControl} from './controllers'
+import {clickControl,
+        touchControl,
+        keyControl,
+        restartController,
+        generateField} from './controllers'
 import Timer from './models/timer'
-import constants from './constants'
 
-const timer = new Timer()
-
-const generateField = () => {
-  for (let i = 1; i !== constants.block_amount + 1; ++i) {
-    const markup = `
-      <div class="view__block" id="${i}" data-pos="${i}">
-        <span>${i !== 16 ? i : ''}</span>
-      </div>  
-    `
-
-    elements.view.insertAdjacentHTML('beforeend', markup)
-  }
-}
+const timer = new Timer(+localStorage.getItem('time') || 0)
+const block_order = localStorage.getItem('blockOrder');
 
 /* CONTROLLER */
 window.onload = e => {
   timer.on()
-  generateField()
+  if (block_order)
+    generateField(block_order.split(',').map(el => +el))
+  else
+    generateField()
 
   clickControl()
   keyControl()
@@ -52,6 +47,11 @@ window.onload = e => {
   })
 
   window.addEventListener('beforeunload', (e) => {
-    localStorage.setItem('time', time)
+    localStorage.setItem('time', timer.time)
+
+    const block_order = []
+    for (let block of Array.from(document.querySelectorAll('.view__block')))
+      block_order.push(block.id)
+    localStorage.setItem('blockOrder', block_order)
   })
 }
