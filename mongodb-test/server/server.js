@@ -1,4 +1,4 @@
-require('./config')
+require('./config/config')
 
 const _ = require('lodash')
 const express = require('express')
@@ -142,3 +142,7 @@ app.listen(port, () => {
 })
 
 module.exports = app
+
+// signup (hash password and generate token)
+// *login (bcrypt.compare(password, hash_password) and generate token)
+// for every private route: authenticate user by check it's token is valid
