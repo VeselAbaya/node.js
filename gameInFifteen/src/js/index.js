@@ -6,8 +6,9 @@ import {clickControl,
         generateField} from './controllers'
 import Timer from './models/timer'
 
+
 const timer = new Timer(+localStorage.getItem('time') || 0)
-const block_order = localStorage.getItem('blockOrder');
+let block_order = localStorage.getItem('blockOrder');
 
 /* CONTROLLER */
 window.onload = e => {

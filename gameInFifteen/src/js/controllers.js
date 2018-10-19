@@ -12,24 +12,35 @@ const arrow_code = {
 }
 
 const isNear = pos => {
-  const available_poss = [pos-1, pos+1, pos-4, pos+4]
+  let available_poss = [pos-1, pos+1, pos-4, pos+4];
+
+  if (pos % constants.grid_size === 0) {
+    available_poss = [pos-1, pos-4, pos+4]
+  }
+  else if (pos % constants.grid_size === 1) {
+    available_poss = [pos+1, pos-4, pos+4]
+  }
+
   return available_poss.includes(current_empty_pos)
 }
 
 export const clickControl = () => {
   elements.view.addEventListener('click', e => {
     const block_pos = +e.target.closest('.view__block').dataset.pos
+    console.log(block_pos)
     if (isNear(block_pos)) {
       const empty_block = document.querySelector(`[data-pos="${current_empty_pos}"]`)
-      const block = e.target
+      const block = e.target.closest('.view__block')
 
       empty_block.innerHTML = block.innerHTML
       block.innerHTML = ''
 
-
       const block_id = e.target.id
       block.id = empty_block.id
       empty_block.id = block_id
+
+      console.log(empty_block)
+      console.log(block)
 
       current_empty_pos = block_pos;
     }
