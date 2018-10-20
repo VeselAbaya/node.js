@@ -27,7 +27,6 @@ const isNear = pos => {
 export const clickControl = () => {
   elements.view.addEventListener('click', e => {
     const block_pos = +e.target.closest('.view__block').dataset.pos
-    console.log(block_pos)
     if (isNear(block_pos)) {
       const empty_block = document.querySelector(`[data-pos="${current_empty_pos}"]`)
       const block = e.target.closest('.view__block')
@@ -35,12 +34,9 @@ export const clickControl = () => {
       empty_block.innerHTML = block.innerHTML
       block.innerHTML = ''
 
-      const block_id = e.target.id
+      const block_id = block.id
       block.id = empty_block.id
       empty_block.id = block_id
-
-      console.log(empty_block)
-      console.log(block)
 
       current_empty_pos = block_pos;
     }

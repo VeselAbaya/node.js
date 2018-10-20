@@ -6,7 +6,6 @@ import {clickControl,
         generateField} from './controllers'
 import Timer from './models/timer'
 
-
 const timer = new Timer(+localStorage.getItem('time') || 0)
 let block_order = localStorage.getItem('blockOrder');
 
