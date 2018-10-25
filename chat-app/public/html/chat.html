@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <!-- FONT AWESOME -->
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css" integrity="sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz" crossorigin="anonymous">
+  <link rel="stylesheet" href="./chat.css">
+  <title>Chat | Chat app</title>
+</head>
+<body>
+  <div class="container">
+    <button class="menu__button">
+      <i class="far fa-user"></i>
+    </button>
+
+    <div class="users">
+      <h2 class="users--title">People</h2>
+      <ul class="users--list"></ul>
+    </div>
+
+    <div class="chat">
+      <div class="messages">
+        <ul class="messages--list"></ul>
+      </div>
+
+      <form class="chat--send">
+        <div style="display: flex;
+                    flex-direction: row;
+                    align-items: flex-end">
+          <input class="chat--send--input">
+        </div>
+        <button class="chat--send--btn">
+          Send
+        </button>
+        <button class="chat--send--location__btn">
+          Send location
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <script type="text/javascript" src="/socket.io/socket.io.js"></script>
+  <script type="text/javascript" src="chat.js"></script>
+</body>
+</html>

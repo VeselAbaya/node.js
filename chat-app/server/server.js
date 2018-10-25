@@ -7,7 +7,7 @@ const app = express()
 const server = http.createServer(app)
 const io = socketIO(server)
 
-const generateMessage = require('./utils/message')
+const {generateMessage, generateLocationMessage} = require('./utils/message')
 
 const port = process.env.PORT || 3000;
 const staticPath = path.join(__dirname, '../dist')
@@ -22,9 +22,15 @@ io.on('connection', (socket) => {
   socket.broadcast.emit('newMessage', generateMessage('Admin', 'Someone connected.'))
 
 
-  socket.on('createMessage', (message) => {
+  socket.on('createMessage', (message, callback) => {
     console.log('Create message', message)
     io.emit('newMessage', generateMessage(message.from, message.text))
+    callback()
+  })
+
+  socket.on('createLocationMessage', (coords) => {
+    console.log('Create location message')
+    io.emit('newLocationMessage', generateLocationMessage('Admin', coords.lat, coords.lon))
   })
 })
 

@@ -2,10 +2,13 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 const path = require('path')
 
 module.exports = {
-  entry: ['babel-polyfill', './public/js/index.js'],
+  entry: {
+    chat: ['babel-polyfill', './public/js/chat.js'],
+    index: './public/js/index.js'
+  },
   output: {
     path: path.resolve(__dirname, 'dist'),
-    filename: 'bundle.js'
+    filename: '[name].js'
   },
   mode: 'development',
   module: {
@@ -21,7 +24,14 @@ module.exports = {
   },
   plugins: [
     new HtmlWebpackPlugin({
-      template: 'public/index.html'
+      inject: false,
+      filename: 'chat.html',
+      template: 'public/html/chat.html'
+    }),
+    new HtmlWebpackPlugin({
+      inject: false,
+      filename: 'index.html',
+      template: 'public/html/index.html'
     })
   ],
   devServer: {
