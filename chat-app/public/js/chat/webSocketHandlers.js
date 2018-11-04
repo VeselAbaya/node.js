@@ -1,5 +1,6 @@
 import {elements} from "./elements"
 import {roomsMessages} from "./roomsMessages"
+
 const moment = require('moment')
 
 const thisRoom = roomsMessages.getCurrentRoom()
@@ -84,6 +85,7 @@ export const updateUserList = (users) => {
 }
 
 export const fetchMessages = () => {
+  console.log(thisRoom)
   thisRoom.messages.forEach(message => {
       if (message.text) {
         const markup = genMessageHTML(message)

@@ -4,6 +4,7 @@ const bodyParser = require('body-parser')
 
 const mongoose = require('./db/mongoose')
 const User = require('./db/models/user')
+const {RoomMessages} = require('./db/models/roomMessages')
 const authenticate = require('./middleware/authenticate')
 
 const app = express()
@@ -29,6 +30,15 @@ app.get('/roomsnames/:roomName', (req, res) => {
 app.get('/names', (req, res) => {
   User.find({}, (err, users) => {
     res.send(users.map(user => user.name))
+  })
+})
+
+app.get('/roomsMessages/', (req, res) => {
+  RoomMessages.find({}, (err, docs) => {
+    if (err)
+      res.status(400).send(err)
+
+    res.send(docs)
   })
 })
 

@@ -83,12 +83,29 @@ export const joinHandler = async (event) => {
   const name = event.target[0].value.toLowerCase()
   const roomName = event.target[1].value.toLowerCase()
 
+  let thisAuthenticatedUser
+  let thisUserName
+  try {
+    thisAuthenticatedUser = await axios({
+      url: '/users/me',
+      method: 'get',
+      headers: {'x-auth': access.token}
+    })
+
+    thisUserName = thisAuthenticatedUser.data.name.toLowerCase()
+  } catch(err) {}
+
   const roomExistingNames = await axios.get(`/roomsnames/${roomName}`)
   const globalExistingNames = await axios.get('/names')
   const existingNames = [...(globalExistingNames.data.map(name => name.toLowerCase())),
                          ...roomExistingNames.data]
   if (existingNames) {
-    if (existingNames.includes(name)) {
+    console.log(thisUserName)
+    if (thisUserName && thisUserName === name) {
+      elements.joinForm.submit()
+      return
+    }
+    else if (existingNames.includes(name)) {
       elements.joinNameError.style.display = 'block'
       elements.joinName.classList.add('form--input-error')
       return

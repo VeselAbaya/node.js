@@ -10,6 +10,7 @@ const socket = io() // emit 'connection'
 
 document.addEventListener('DOMContentLoaded', () => {
   fetchMessages()
+  const params = queryString.parse(window.location.search)
 
   elements.sendLocationBtn.addEventListener('click', (event) => {
     event.preventDefault()
@@ -29,7 +30,6 @@ document.addEventListener('DOMContentLoaded', () => {
   elements.sendForm.addEventListener('submit', (e) => {
     e.preventDefault()
 
-    const params = queryString.parse(window.location.search)
     const input = elements.messageInput
     if (input.value)
       socket.emit('createMessage', {
@@ -41,10 +41,9 @@ document.addEventListener('DOMContentLoaded', () => {
   })
 
   socket.on('connect', () => {
-    const params = queryString.parse(window.location.search)
     socket.emit('join', {name: params.name, room: params.room.toLowerCase()}, (err) => {
       if (err) {
-        alert(err);
+        alert(err)
         window.location.href = '/'
       }
     })
@@ -55,7 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   elements.menuBtn.addEventListener('click', animateMenu)
 
-  window.addEventListener('beforeunload', () => {
+  window.addEventListener('beforeunload', (event) => {
     roomsMessages.saveMessagesLocal()
   })
 })

@@ -1,8 +1,16 @@
+import axios from "axios"
+
 const queryString = require('query-string')
 
 class RoomsMessages {
   constructor () {
-    this.data = JSON.parse(localStorage.getItem('messages')) || []
+    this.data = []
+    axios.get('/roomsMessages')
+      .then(res => {
+        this.data = res.data
+        console.log(this.data)
+      })
+      .catch(err => {})
     this.roomName = queryString.parse(window.location.search).room.toLowerCase()
   }
 
@@ -15,18 +23,7 @@ class RoomsMessages {
   }
 
   getCurrentRoom() {
-    const currentRoom = this.data.find(room => room.name === this.roomName)
-    if (!currentRoom) {
-      this.data.push({
-        name: this.roomName,
-        messages: []
-      })
-
-      return this.data.find(room => room.name === this.roomName)
-    }
-    else {
-      return currentRoom
-    }
+    return this.data.find(room => room.name === this.roomName)
   }
 
   saveMessagesLocal() {
