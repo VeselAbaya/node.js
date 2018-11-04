@@ -1,36 +1,66 @@
-const express = require('express')
+require('./config/config')
+
 const http = require('http')
 const socketIO = require('socket.io')
-const path = require('path')
+const {app, availableRooms, port, roomsNames} = require('./routes')
 
-const app = express()
 const server = http.createServer(app)
 const io = socketIO(server)
 
-const {generateMessage, generateLocationMessage} = require('./utils/message')
+// const mongoose = require('./db/mongoose')
 
-const port = process.env.PORT || 3000;
-const staticPath = path.join(__dirname, '../dist')
+const {generateMessage, generateLocationMessage} = require('./utils/messages/message')
+const {isRealString} = require('./utils/validation')
 
-app.use(express.static(staticPath))
+const {Users} = require('./utils/users/users')
+const users = new Users();
 
 io.on('connection', (socket) => {
-  console.log('New user connected')
+  socket.on('join', (params, callback) => {
+    if (!isRealString(params.name) || !isRealString(params.room))
+      return callback('Name and room name are required')
 
-  // Say hay to the user
-  socket.emit('newMessage', generateMessage('Admin', 'Welcome to the chat!'))
-  socket.broadcast.emit('newMessage', generateMessage('Admin', 'Someone connected.'))
+    socket.join(params.room)
+    users.removeUser(socket.id)
+    users.addUser(socket.id, params.name, params.room)
+    io.to(params.room).emit('updateUserList', users.getUsersList(params.room))
 
+    // update available rooms
+    if (users.getUsersList(params.room).length >= 1)
+      availableRooms.add(params.room)
 
-  socket.on('createMessage', (message, callback) => {
-    console.log('Create message', message)
-    io.emit('newMessage', generateMessage(message.from, message.text))
-    callback()
+    // update roomsNames
+    roomsNames.addName(params.room, params.name)
+
+    socket.on('createMessage', message => {
+      const user = users.getUser(socket.id)
+
+      if (user && isRealString(message.text))
+        io.to(params.room)
+          .emit('newMessage', generateMessage(user.name, message.text))
+    })
+
+    socket.on('createLocationMessage', (coords) => {
+      const user = users.getUser(socket.id)
+
+      if (user) {
+        io.to(params.room)
+          .emit('newLocationMessage', generateLocationMessage(user.name, coords.lat, coords.lon))
+      }
+    })
   })
 
-  socket.on('createLocationMessage', (coords) => {
-    console.log('Create location message')
-    io.emit('newLocationMessage', generateLocationMessage('Admin', coords.lat, coords.lon))
+  socket.on('disconnect', () => {
+    const user = users.removeUser(socket.id)
+
+    // update roomsNames
+    roomsNames.removeName(user.room, user.name)
+
+    if (user)
+      io.to(user.room).emit('updateUserList', users.getUsersList(user.room).sort())
+
+    if (user && users.getUsersList(user.room).length <= 0)
+      availableRooms.delete(user.room)
   })
 })
 

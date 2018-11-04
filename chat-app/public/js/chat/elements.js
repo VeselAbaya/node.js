@@ -5,8 +5,9 @@ export const elements = {
   messagesList: document.querySelector('.messages--list'),
   messages: document.querySelector('.messages'),
   menuBtn: document.querySelector('.menu__button'),
-  usersList: document.querySelector('.users'),
+  users: document.querySelector('.users'),
   container: document.querySelector('.container'),
   usersTitle: document.querySelector('.users--title'),
-  usersIcon: document.querySelector('.menu__button i')
+  usersIcon: document.querySelector('.menu__button i'),
+  usersList: document.querySelector('.users--list')
 }

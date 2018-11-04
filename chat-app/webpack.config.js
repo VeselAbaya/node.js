@@ -3,8 +3,8 @@ const path = require('path')
 
 module.exports = {
   entry: {
-    chat: ['babel-polyfill', './public/js/chat.js'],
-    index: './public/js/index.js'
+    chat: ['babel-polyfill', './public/js/chat/chat.js'],
+    index: './public/js/join/index.js'
   },
   output: {
     path: path.resolve(__dirname, 'dist'),

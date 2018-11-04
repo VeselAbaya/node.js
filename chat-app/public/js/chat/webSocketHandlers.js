@@ -1,5 +1,8 @@
 import {elements} from "./elements"
+import {roomsMessages} from "./roomsMessages"
 const moment = require('moment')
+
+const thisRoom = roomsMessages.getCurrentRoom()
 
 const scrollToBottom = () => {
   // Selectors
@@ -20,9 +23,9 @@ const scrollToBottom = () => {
     messages.scrollTop = scrollHeight
 }
 
-export const onNewMessage = (message) => {
+const genMessageHTML = (message) => {
   const formattedTime = moment(message.createdAt).format('h:mm a')
-  const markup = `
+  return `
         <li class="message">
           <div class="message__title">
             <h4>${message.from}</h4>
@@ -33,15 +36,11 @@ export const onNewMessage = (message) => {
           </div>
         </li>
       `
-
-  elements.messagesList.insertAdjacentHTML('beforeend', markup)
-
-  scrollToBottom()
 }
 
-export const onNewLocationMessage = (message) => {
+const genLocationMessageHTML = (message) => {
   const formattedTime = moment(message.createdAt).format('h:mm a')
-  const markup = `
+  return `
         <li class="message">
           <div class="message__title">
             <h4>${message.from}</h4>
@@ -52,8 +51,49 @@ export const onNewLocationMessage = (message) => {
           </div>
         </li>
       `
+}
 
+export const onNewMessage = (message) => {
+  thisRoom.messages.push(message)
+
+  const markup = genMessageHTML(message)
   elements.messagesList.insertAdjacentHTML('beforeend', markup)
-
   scrollToBottom()
+}
+
+export const onNewLocationMessage = (message) => {
+  thisRoom.messages.push(message)
+
+  const markup = genLocationMessageHTML(message)
+  elements.messagesList.insertAdjacentHTML('beforeend', markup)
+  scrollToBottom()
+}
+
+export const updateUserList = (users) => {
+  elements.usersList.innerHTML = ''
+
+  users.forEach(user => {
+    const markup = `
+      <li>
+        ${user}
+      </li>
+    `
+
+    elements.usersList.insertAdjacentHTML('beforeend', markup)
+  })
+}
+
+export const fetchMessages = () => {
+  thisRoom.messages.forEach(message => {
+      if (message.text) {
+        const markup = genMessageHTML(message)
+        elements.messagesList.insertAdjacentHTML('beforeend', markup)
+        scrollToBottom()
+      }
+      else if(message.url) {
+        const markup = genLocationMessageHTML(message)
+        elements.messagesList.insertAdjacentHTML('beforeend', markup)
+        scrollToBottom()
+      }
+    })
 }

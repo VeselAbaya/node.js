@@ -1,11 +1,16 @@
 import {elements} from "./elements"
 import {animateMenu} from "./animation"
-import {onNewMessage, onNewLocationMessage} from "./webSocketHandlers"
+import {onNewMessage, onNewLocationMessage, updateUserList, fetchMessages} from "./webSocketHandlers"
+import {roomsMessages} from "./roomsMessages"
+
+const queryString = require('query-string')
 
 console.log('client started up')
-const socket = io()
+const socket = io() // emit 'connection'
 
 document.addEventListener('DOMContentLoaded', () => {
+  fetchMessages()
+
   elements.sendLocationBtn.addEventListener('click', (event) => {
     event.preventDefault()
     if (!navigator.geolocation)
@@ -24,21 +29,33 @@ document.addEventListener('DOMContentLoaded', () => {
   elements.sendForm.addEventListener('submit', (e) => {
     e.preventDefault()
 
+    const params = queryString.parse(window.location.search)
     const input = elements.messageInput
     if (input.value)
       socket.emit('createMessage', {
-        from: 'User',
+        from: params.name,
         text: input.value
-      }, () => {
-        console.log('!!!got it!!!')
       })
 
     input.value = ''
   })
 
+  socket.on('connect', () => {
+    const params = queryString.parse(window.location.search)
+    socket.emit('join', {name: params.name, room: params.room.toLowerCase()}, (err) => {
+      if (err) {
+        alert(err);
+        window.location.href = '/'
+      }
+    })
+  })
   socket.on('newMessage', onNewMessage)
-
   socket.on('newLocationMessage', onNewLocationMessage)
+  socket.on('updateUserList', updateUserList)
 
   elements.menuBtn.addEventListener('click', animateMenu)
+
+  window.addEventListener('beforeunload', () => {
+    roomsMessages.saveMessagesLocal()
+  })
 })

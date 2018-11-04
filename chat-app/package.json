@@ -16,11 +16,17 @@
   "author": "Antay Juskovets",
   "license": "ISC",
   "dependencies": {
+    "axios": "^0.18.0",
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.18.3",
     "express": "^4.16.4",
-    "font-awesome": "^4.7.0",
+    "jsonwebtoken": "^8.3.0",
     "moment": "^2.22.2",
+    "mongoose": "^5.3.7",
+    "query-string": "^6.2.0",
     "socket.io": "^2.1.1",
-    "socket.io-client": "^2.1.1"
+    "socket.io-client": "^2.1.1",
+    "validator": "^10.8.0"
   },
   "devDependencies": {
     "@babel/core": "^7.1.2",
